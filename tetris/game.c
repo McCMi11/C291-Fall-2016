@@ -84,9 +84,15 @@ int game(void) {
       if ((arrow = read_escape(&c)) != NOCHAR) {
 	switch (arrow) {
 	case UP:
+          undisplay_tetromino(current);
+          rotate_cw(current);
+          display_tetromino(current);
 	  mvprintw(10,10,"UP            ");
 	  break;
 	case DOWN:
+          undisplay_tetromino(current);
+          rotate_ccw(current);
+          display_tetromino(current);
 	  mvprintw(10,10,"DOWN          ");
 	  break;
 	case LEFT:
@@ -99,12 +105,18 @@ int game(void) {
 	  mvprintw(10,10,"REGCHAR 0x%02x",c);
 	  if (c=='q'){
 	    state = EXIT;
-	  }
+	  }else if (c == ' '){
+            undisplay_tetromino(current);
+            destroy_tetromino(current);
+            current = next;
+            display_tetromino(current);
+            next = create_tetromino ((w->upper_left_x+(w->width/2)), w->upper_left_y);
+          }
   	  break;
 	default:
 	  break;
 	}
-      } 
+      }
       break;
     case EXIT:
       endwin();
