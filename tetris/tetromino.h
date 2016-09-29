@@ -45,11 +45,16 @@ typedef struct tetromino {
 
 extern const tetromino_t tetromino_types[7];
 
+enum {SAFE, COLLIDE}; // Return status for check_collision 
+int check_collision (tetromino_t *);
+
+enum {MOVE_OK, MOVE_FAILED}; // Return status for move
+int move_tet (tetromino_t *, int, int);
 int rotate_cw(tetromino_t *);
 int rotate_ccw(tetromino_t *);
 tetromino_t *create_tetromino (int, int);
 int destroy_tetromino(tetromino_t *);
-void display_tetromino(tetromino_t *);
-void undisplay_tetromino(tetromino_t *);
+void print_tetromino(tetromino_t *tet);
+void test_tetromino(void);
 
 /* tetromino.h ends here */

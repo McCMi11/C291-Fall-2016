@@ -1,3 +1,11 @@
+#Ignore all
+*
+
+#Change above
+# to allow anything
+# with an extension
+!*.*
+
 # Object files
 *.o
 *.ko

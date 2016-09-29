@@ -54,8 +54,10 @@ int game(void) {
   int x,y;
   int c;
   int arrow;
-  struct timespec tim = {0,1000000};
+  struct timespec tim = {0,1000000};  // Each execution of while(1) is approximately 1mS
   struct timespec tim_ret;
+  int move_counter = 0;
+  int move_timeout = BASE_FALL_RATE;            
 
   while(1) {
     switch(state) {
@@ -66,6 +68,7 @@ int game(void) {
       getmaxyx(stdscr,y,x);  // Get the screen dimensions 
       w = init_well(((x/2)-(WELL_WIDTH/2)),1,WELL_WIDTH,WELL_HEIGHT);
       draw_well(w);
+      srand(time(NULL));     // Seed the random number generator with the time. Used in create tet. 
       state = ADD_PIECE;
       break;
     case ADD_PIECE:          // Add a new piece to the game
@@ -101,10 +104,11 @@ int game(void) {
 	case RIGHT:
 	  mvprintw(10,10,"RIGHT         ");
 	  break;
-	case REGCHAR:
+	case REGCHAR: 
 	  mvprintw(10,10,"REGCHAR 0x%02x",c);
-	  if (c=='q'){
+	  if (c == 'q') {
 	    state = EXIT;
+<<<<<<< HEAD
 	  }else if (c == ' '){
             undisplay_tetromino(current);
             destroy_tetromino(current);
