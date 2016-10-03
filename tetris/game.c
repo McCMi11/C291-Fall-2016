@@ -100,26 +100,53 @@ int game(void) {
 	  break;
 	case LEFT:
 	  mvprintw(10,10,"LEFT          ");
+          undisplay_tetromino(current);
+          move_tet(current,current->upper_left_x - 1, current->upper_left_y);
+          display_tetromino(current);
 	  break;
 	case RIGHT:
 	  mvprintw(10,10,"RIGHT         ");
+          undisplay_tetromino(current);
+          move_tet(current,current->upper_left_x + 1, current->upper_left_y);
+          display_tetromino(current);
 	  break;
 	case REGCHAR: 
-	  mvprintw(10,10,"REGCHAR 0x%02x",c);
 	  if (c == 'q') {
 	    state = EXIT;
-<<<<<<< HEAD
 	  }else if (c == ' '){
-            undisplay_tetromino(current);
-            destroy_tetromino(current);
-            current = next;
-            display_tetromino(current);
-            next = create_tetromino ((w->upper_left_x+(w->width/2)), w->upper_left_y);
+	    mvprintw(10,10,"Space");
+	    while(1){
+	      if (move_counter++ >= move_timeout) {
+		undisplay_tetromino(current);
+		if(move_tet(current,current->upper_left_x,current->upper_left_y + 1) != 0){
+		  display_tetromino(current);
+		  state = ADD_PIECE;
+		}
+		display_tetromino(current);
+		move_counter = 0;
+		break;
+	      }
+	      undisplay_tetromino(current);
+              move_tet(current,current->upper_left_x,current->upper_left_y + 1);
+              display_tetromino(current);
+	      refresh();
+	      nanosleep(&tim,&tim_ret);
+	    }
+	    break;
           }
   	  break;
 	default:
 	  break;
 	}
+      }
+      if (move_counter++ >= move_timeout) {
+	undisplay_tetromino(current);
+	if(move_tet(current,current->upper_left_x,current->upper_left_y + 1) != 0){
+	  display_tetromino(current);
+	  state = ADD_PIECE;
+	}
+	display_tetromino(current);
+        move_counter = 0;
       }
       break;
     case EXIT:
