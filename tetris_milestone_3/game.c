@@ -64,7 +64,7 @@ highscore_t *game(highscore_t *highscores) {
   int lines_cleared = 0;
   int score = 0;
   char str[80];  
-
+  
   while(1) {
     switch(state) {
     case INIT:               // Initialize the game, only run one time 
@@ -77,6 +77,8 @@ highscore_t *game(highscore_t *highscores) {
       srand(time(NULL));     // Seed the random number generator with the time. Used in create tet. 
       display_score(score, w->upper_left_x-15,w->upper_left_y);  
       state = ADD_PIECE;
+      // mvprintw(1,0,"Highscores");
+      //print_score_list (highscores, 0, 2, 0);
       break;
     case ADD_PIECE:          // Add a new piece to the game
       if (next) {
@@ -87,8 +89,12 @@ highscore_t *game(highscore_t *highscores) {
 	current = create_tetromino ((w->upper_left_x+(w->width/2)), w->upper_left_y);
 	next = create_tetromino ((w->upper_left_x+(w->width/2)), w->upper_left_y);
       }
-      display_tetromino(current);
-      state = MOVE_PIECE;
+      if( move_tet(current,current->upper_left_x,current->upper_left_y) == MOVE_FAILED){
+	state = GAME_OVER;
+      }else {
+	display_tetromino(current);
+	state = MOVE_PIECE;
+      }
       break;
     case MOVE_PIECE:         // Move the current piece 
       if ((arrow = read_escape(&c)) != NOCHAR) {
@@ -139,6 +145,21 @@ highscore_t *game(highscore_t *highscores) {
       getmaxyx(stdscr,y,x);
       mvprintw(1,x/2-5,"  GAME_OVER  ");
       mvprintw(2,x/2-5,"#############");
+      mvprintw(3,x/2-5," Please type ");
+      mvprintw(4,x/2-5,"Three Letters");
+      char initials[NAME_SIZE+1];
+      initials[0] = getch();
+      mvprintw(5,x/2-5,"     %c       ",initials[0]);
+      initials[1] = getch();
+      mvprintw(5,x/2-5,"     %c%c     ",initials[0],initials[1]);
+      initials[2] = getch();
+      mvprintw(5,x/2-5,"     %c%c%c   ",initials[0],initials[1],initials[2]);
+      highscores = insert_score(highscores, &initials[0], score);
+      //mvprintw(1,0,"Highscores");
+      //print_score_list (highscores, 0, 2, 0);
+
+      mvprintw(8,x/2-5," Your Score: ");
+      mvprintw(9,x/2-5,"      %d     ", score);
       mvprintw(16,x/2-5,"Hit q to exit");
       getch(); // Wait for a key to be pressed. 
       state = EXIT;
@@ -147,6 +168,8 @@ highscore_t *game(highscore_t *highscores) {
       return(highscores);  // Return the highscore structure back to main to be stored on disk. 
       break;
     }
+    score = compute_score(score ,prune_well(w));
+    display_score(score, w->upper_left_x-15,w->upper_left_y);
     refresh();
     nanosleep(&tim,&tim_ret);
   }

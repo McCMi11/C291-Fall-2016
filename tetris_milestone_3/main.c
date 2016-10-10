@@ -42,11 +42,23 @@
 int main(int argc, char *argv[]) {
   int status = 1;
   highscore_t * highscores;
-  /* if (argc!=2) { */
-  /*   printf("Please specify a high score file\n"); */
-  /*   return (-1); */
-  /* } */
+  char *hsFile;
+  if (argc!=2) { 
+    char defName[11] = "scores.dat";
+    hsFile = &defName[0];
+    printf("Using default high score file\nscores.dat");
+    FILE *fp = fopen(defName, "w");
+    fprintf(fp,"NUL-----,0\n");
+    fclose(fp);
+    highscores = load_scores(hsFile);
+    sleep(1);
+  } else{
+    hsFile = argv[1]; 
+    highscores = load_scores(argv[1]);
+  }
+  mvprintw(1,0,"Highscores");
   highscores = game(highscores);
+  //store_scores(hsFile, highscores);
   endwin();
   return (0);
 }
