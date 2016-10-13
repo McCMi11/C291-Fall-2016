@@ -46,9 +46,9 @@ well_t *init_well(int upper_left_x, int upper_left_y, int width, int height) {
   w->width = width;
   w->height = height;
   w->draw_char = '#';
-  w->color[0] = 0;
-  w->color[1] = 0;
-  w->color[2] = 0;
+  w->color[0] = 1;
+  w->color[1] = 1;
+  w->color[2] = 1;
   return (w);
 }
 
@@ -86,7 +86,6 @@ int prune_well(well_t * well) {
   current_row_position = well->upper_left_y + well->height - 1; // bottom of the well. 
   well_original = malloc(sizeof(chtype) * well->width * well->height);
   well_modified = well_original;
-
   // Read in the well 
   while (current_row_position > well->upper_left_y) {
     num_chars = mvinchnstr(current_row_position, current_column_position, well_modified, well->width-1);
@@ -112,7 +111,6 @@ int prune_well(well_t * well) {
       well_modified = col_ptr; // restore pointer back to the beginning of the row.  
       for (i = 0; i < well->width-1; i++) {
 	mvprintw(output_row,current_column_position+i,"%c",*well_modified);
-	//mvprintw(output_row,i+2,"%c",*well_modified);
 	well_modified++;
       }
       output_row--;

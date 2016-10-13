@@ -40,7 +40,7 @@ typedef struct tetromino {
   int upper_left_x;
   int upper_left_y;
   char draw_char;
-  int color[3];
+  char color[3];
 } tetromino_t;
 
 extern const tetromino_t tetromino_types[7];

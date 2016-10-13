@@ -187,11 +187,15 @@ tetromino_t *create_tetromino (int initial_x, int initial_y) {
   memcpy(tet, &tetromino_types[type], sizeof(tetromino_t));
   tet->upper_left_x = initial_x;
   tet->upper_left_y = initial_y;
-  tet->color[0] = rand() % 5 + 1;
+  int col = rand() % 5 + 1;
+  tet->color[0] = col;
+  tet->color[1] = col;
+  tet->color[2] = col;
   return(tet);
 }
 
 display_tetromino(tetromino_t *tet) {
+  attrset(COLOR_PAIR(tet->color[0]));
   int x,y;
   for (x=0;x<4;x++) {
     for (y=0;y<+4;y++) {
@@ -202,6 +206,7 @@ display_tetromino(tetromino_t *tet) {
       }
     }
   }
+  attroff(COLOR_PAIR(tet->color[0]));
 }
 
 undisplay_tetromino(tetromino_t *tet) {

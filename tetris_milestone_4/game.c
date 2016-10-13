@@ -46,12 +46,39 @@
 void init_game(void) {
   int x,y;
 }
+//Challenge 1: Display next piece
+void dispNext(tetromino_t *tet){
+  int x,y;
+  attrset(COLOR_PAIR(tet->color[0]));
+  for (x=0;x<4;x++) {
+    for (y=0;y<+4;y++) {
+      if (tet->piece[x][y]) {
+	
+        mvprintw(1+y,10+x,"%c",tet->draw_char);
+	
+      }
+    }
+  }
+  attroff(COLOR_PAIR(tet->color[0]));
+}
+
+void hideNext(tetromino_t *tet){
+  int x,y;
+  for (x=0;x<4;x++) {
+    for (y=0;y<+4;y++) {
+      if (tet->piece[x][y]) {
+
+        mvprintw(1+y,10+x," ");
+
+      }
+    }
+  }
+}
 
 highscore_t *game(highscore_t *highscores) {
   static int state = INIT;
   tetromino_t *next = NULL;
   tetromino_t *current = NULL;
-  //tetromino_t *dispNext = NULL;
   int nextX;
   int nextY;
   well_t *w;
@@ -81,8 +108,6 @@ highscore_t *game(highscore_t *highscores) {
         init_pair(3, COLOR_GREEN, COLOR_GREEN);
         init_pair(4, COLOR_BLUE, COLOR_BLUE);
         init_pair(5, COLOR_WHITE, COLOR_WHITE);
-      //start_color();
-      //init_pair(0, COLOR_RED, COLOR_BLACK);
       //Challenge 2: Splash
       nodelay(stdscr,FALSE);
       refresh();
@@ -108,15 +133,10 @@ highscore_t *game(highscore_t *highscores) {
       attroff(COLOR_PAIR(11));
       refresh();
       getch();
-
-      for(i = 0;i< x;i++){
-	for(j = 0; j < y; j++){
-	    mvprintw(j,i," ");
-	}
-      }
+      clear();
       refresh();
       //End Challenge 2
-   
+      mvprintw(0,10,"Next Piece");
       nodelay(stdscr,TRUE);  // Do not wait for characters using getch.  
       noecho();              // Do not echo input characters 
       //getmaxyx(stdscr,y,x);  // Get the screen dimensions 
@@ -130,13 +150,16 @@ highscore_t *game(highscore_t *highscores) {
       break;
     case ADD_PIECE:          // Add a new piece to the game
       if (next) {
-        //undisplay_tetromino(next);
+	score = compute_score(score ,prune_well(w));
 	current = next;
+	hideNext(next);
 	next = create_tetromino ((w->upper_left_x+(w->width/2)), w->upper_left_y);
+	dispNext(next);
       }
       else {
 	current = create_tetromino ((w->upper_left_x+(w->width/2)), w->upper_left_y);
 	next = create_tetromino ((w->upper_left_x+(w->width/2)), w->upper_left_y);
+	dispNext(next);
       }
       if( move_tet(current,current->upper_left_x,current->upper_left_y) == MOVE_FAILED){
 	state = GAME_OVER;
@@ -144,24 +167,6 @@ highscore_t *game(highscore_t *highscores) {
 	display_tetromino(current);
 	state = MOVE_PIECE;
       }
-      //Challenge 1
-/*
-      nextX = next->upper_left_x;
-      nextY = next->upper_left_y;
-      move_tet(next,0,1);
-      display_tetromino(next);
-      next->upper_left_x = nextX;
-      next->upper_left_y = nextY;
-
-      mvprintw(6,2,"Next Piece");
-      if(dispNext){
-	undisplay_tetromino(dispNext);
-       }
-      dispNext = next;
-      move_tet(dispNext,0,1);
-      display_tetromino(dispNext);
-      destroy_tetromino(dispNext);
-*/
       break;
     case MOVE_PIECE:         // Move the current piece 
       if ((arrow = read_escape(&c)) != NOCHAR) {
@@ -196,7 +201,7 @@ highscore_t *game(highscore_t *highscores) {
       } 
       if (move_counter++ >= move_timeout) {
 	counter++;
-	undisplay_tetromino(current);
+        undisplay_tetromino(current);
 	status = move_tet(current,current->upper_left_x,current->upper_left_y+1);
 	display_tetromino(current);
 	if (status == MOVE_FAILED) {
@@ -240,7 +245,7 @@ highscore_t *game(highscore_t *highscores) {
       return(highscores);  // Return the highscore structure back to main to be stored on disk. 
       break;
     }
-    score = compute_score(score ,prune_well(w));
+    // score = compute_score(score ,prune_well(w));
     display_score(score, w->upper_left_x-15,w->upper_left_y);
     refresh();
     nanosleep(&tim,&tim_ret);
